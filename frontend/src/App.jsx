@@ -1,28 +1,34 @@
-import { useState } from 'react'
-import {Container, Typography, Box} from "@mui/material"
+import {  createContext } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 import LoginBox from './login/loginpage';
 import Signup from './signup/signuppage';
 import Home from './homepage/homepage';
 import Signupstepper from './signup/test';
+import { useState } from "react";
+
+export const AuthContext = createContext();
+
 function App() {
 
+  //User object and functions
+  const [user, setUser] = useState({ 
+    user_name : " ",
+    user_pass : " "})
+
+  const [isLogged, setIsLogged] = useState(false);
+
   return (
-    
-<LocalizationProvider dateAdapter={AdapterDayjs}> 
+    <AuthContext.Provider value={{isLogged, setIsLogged, user, setUser}}>
     <BrowserRouter>
       <Routes>
-        
+        <Route path='/' element={<Home />} />
         <Route path='login' element={<LoginBox />}/>
         <Route path ='signup' element={<Signup />}/>
-        <Route path='/' element={<Home />} />
-        <Route path='test' element={<Signupstepper />}/>
       </Routes>
     </BrowserRouter>
-    </LocalizationProvider>
+    </AuthContext.Provider>
+ 
   )
 }
 

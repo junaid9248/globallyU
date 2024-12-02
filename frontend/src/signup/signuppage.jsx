@@ -1,30 +1,15 @@
 import { useState } from 'react'
-import {createTheme,ThemeProvider, Typography, Box, FormControl,TextField, Button, OutlinedInput, FormHelperText, MenuItem, InputLabel} from "@mui/material"
-import { DatePicker } from '@mui/x-date-pickers'
-import dayjs, { Dayjs } from 'dayjs';
+import { useNavigate } from 'react-router-dom';
+import {createTheme,ThemeProvider, Typography, Box, FormControl,TextField, Button, OutlinedInput, FormHelperText, MenuItem, Alert, Snackbar} from "@mui/material"
 import Autocomplete from '@mui/material/Autocomplete'
 import PasswordChecklist from "react-password-checklist"
 import { red } from '@mui/material/colors';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CheckIcon from '@mui/icons-material/Check';
+import { useUserStore } from '../store/user';
 
 export default function Signup(){
-
-  const [user, setUser] = useState({
-
-    account:{
-
-      name: "",
-      pass: "",
-    }
-
-  })
-
-
-  const submitHandler = (e) => {
-
-    e.preventDefault()
-    console.log(user)
-    
-  }
 
   const myTheme = createTheme({
 
@@ -73,45 +58,180 @@ export default function Signup(){
    
 })
 
+  const [user, setUser] = useState({
+    
+    
+
+      fname: " ",
+      lname: " ",
+      dob: " ",
+      country: " ",
+      uni:" ",
+      yr: " ",
+      major: " ",
+
+      username: " ",
+      pass: " ",
+  
+
+
+  })
+
+
+
+  //State for alert rendering
+  const [openAlert, setOpenAlert] = useState(false);
+  const [openAlert1, setOpenAlert1] = useState(false);
+
+  const nav = useNavigate()
+
+  //Adding new user 
+  const handleAddNewUser = ()=>{
+
+    if(!user.username || !user.password){
+      setOpenAlert1("True")
+
+      setTimeout(() => {
+        setOpenAlert1(false);
+      }, 3000);
+    }else{
+      console.log(user)
+
+      setOpenAlert(true); // Show the alert when form is submitted
+  
+      // Automatically close the alert after 3 seconds
+      
+      setTimeout(() => {
+        setOpenAlert(false);
+      }, 1500);
+  
+      setTimeout(() => {
+        nav('/login')
+      }, 1000);
+    }
+
+
+  }
+
     return(
     <ThemeProvider theme={myTheme}> 
-    <Box id="main-box"
-      sx={{display: 'flex',
-        flexDirection:'row', 
-        justifyContent:'center', 
-        alignItems:'center',
-        width:'95vw',
-        height:"90vh",}}>
+      <Box id="main-box"
+        sx={{display: 'flex',
+          flexDirection:'row', 
+          justifyContent:'center', 
+          alignItems:'center',
+          width:'95vw',
+          height:"90vh",}}>
 
-      <PersonalDetails theme={myTheme} submitHandler={submitHandler}/>      
-    
-      </Box>
-        </ThemeProvider>
+        <Snackbar open={openAlert} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+          <Alert severity="success" variant="filled">
+            New user has been created successfully! <br/> Redirecting to login page...
+          </Alert>
+        </Snackbar>
+
+        <Snackbar open={openAlert1} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+          <Alert severity="error" variant="filled">
+            User details not satisfied <br/> Please try again
+          </Alert>
+        </Snackbar>
+
+        <PersonalDetails theme={myTheme} user={user} setUser={setUser}/>    
+        <UserDetails theme={myTheme} user={user} setUser={setUser}  setOpenAlert={setOpenAlert} handleAddNewUser={handleAddNewUser}/>  
+      
+        </Box>
+      </ThemeProvider>
 
     )
 }
 
-//First child
-function PersonalDetails(props){
+//First children
+function UserDetails(props){
 
-  const submitHandler = (e, personal) => {
 
-    console.log(personal)
-    e.preventDefault()
+  return(
+
+    <ThemeProvider theme={props.theme}>
     
-  }
+     <Box id={'profile-detail-box'}
+        sx={{display: 'flex',
+           flexDirection:'column', 
+           justifyContent:'center', 
+           alignItems:'center',
+           backgroundColor:'primary.dark',
+           borderRadius:'0px 16px 16px 0px',
+           width:'50%',
+           height:'90vh',
+           margin:'1rem 0rem',
+           padding:'0.5rem'}}>
+          
+          <Typography variant="h4" align='center'sx={{ minWidth: '100%'}}> User profile details </Typography>
+          <form id='user-profile-form-main'
+           styles={{display: 'flex',
+             flexDirection:'column', 
+             justifyContent:'center', 
+             alignItems:'center',
+             minWidth:'100%'}}>
 
-  const [personal, setPersonal]=useState({
+            <FormControl>
+               <OutlinedInput
+               type='text'
+               placeholder='Username'
+               onChange={(e)=>{props.setUser( prevUser => ({...prevUser, username: e.target.value}))}}/>
+            </FormControl>
+            
+            <PasswordChecklist rules={["minLength", "noSpaces", "specialChar"]}
+                             value={props.user.username}
+                             minLength={5}
+                             maxLength={50}
+                             onChange={(isValid) => {}}
 
-    fname: " ",
-    lname: " ",
-    dob: " ",
-    country: " ",
-    uni:" ",
-    yr: " ",
-    major: " ",
+                             messages={{minLength:"Username must be minimum of 5 characters", 
+                                       noSpaces:"Username cannot contain any spaces",
+                                       specialChar:"Username must contain a special character"
+                             }}
+                           />
 
-  })
+            <FormControl> 
+               <FormControl>
+                 <OutlinedInput
+                 type='text'
+                 placeholder='Password'
+                 onChange={(e)=>{props.setUser(prevUser => ({...prevUser, pass: e.target.value}))}}
+                 sx={{}} />
+               </FormControl>
+               
+           </FormControl>
+
+           <PasswordChecklist rules={["minLength", "specialChar", "capitalAndLowercase","letter", "noSpaces", "number" ]}
+                 value={props.user.pass}
+                
+
+                 minLength={8}
+                 onChange={(isValid) => {}}
+
+                 messages={{minLength:"Password must be minimum of 8 characters", 
+                           capitalAndLowercase:"Password must have atleast one uppercase and one lowercase letter",
+                           noSpaces:"Password cannot contain any spaces",
+                           number:"Password must contain atleast one number",
+                       
+                 }}
+               />
+
+          <Button 
+            onClick={props.handleAddNewUser}
+            sx={{minWidth:'100%'}}
+             startIcon={<AddCircleOutlineIcon />}
+             variant='contained' 
+             size={'large'} 
+             color='success'> Create my account</Button>
+
+            </form>
+      </Box>
+    </ThemeProvider>
+  )
+}
+
+function PersonalDetails(props){
 
   return(
     
@@ -131,7 +251,6 @@ function PersonalDetails(props){
           <Typography variant='h4' align='center' sx={{ width: '100%' }}> Personal details </Typography>
   
           <form id="personal-details-form-main"
-            onSubmit={(e)=>submitHandler(e, personal)}
             styles={{display: 'flex',
             flexDirection:'column', 
             justifyContent:'center', 
@@ -144,7 +263,7 @@ function PersonalDetails(props){
                   <OutlinedInput
                   type='text'
                   placeholder='First Name'
-                  onChange={(e)=>{{setPersonal({...personal, fname: e.currentTarget.value})}}}
+                  onChange={(e)=>{props.setUser( prevUser => ({...prevUser, fname: e.target.value}))}}
                    />
             </FormControl>
   
@@ -152,39 +271,57 @@ function PersonalDetails(props){
                 <OutlinedInput
                     type='text'
                     placeholder='Last Name' 
-                    onChange={(e)=>{{setPersonal({...personal, lname: e.currentTarget.value})}}}/>
+                    onChange={(e)=>{props.setUser( prevUser => ({...prevUser, lname: e.target.value}))}}/>
             </FormControl>
                   
             <FormControl>
             <OutlinedInput
                     type='text'
                     placeholder='Date of Birth' 
-                    onChange={(e)=>{{setPersonal({...personal, dob: e.currentTarget.value})}}}/>
+                    onChange={(e)=>{props.setUser( prevUser => ({...prevUser, dob: e.target.value}))}}/>
                     <FormHelperText sx={{color: 'primary.light'}}variant='outlined'> Enter DOB in MM-DD-YYYY format </FormHelperText>
             </FormControl>
               
-            <FormControl> <SelectCountry personal={personal} setPersonal={setPersonal}/> </FormControl>
+            <FormControl>
+            <OutlinedInput
+                    type='text'
+                    placeholder='Country of Origin' 
+                    onChange={(e)=>{props.setUser( prevUser => ({...prevUser, country: e.target.value}))}}/>
+            </FormControl>
 
             <FormControl> 
             <OutlinedInput
                     type='text'
                     placeholder='University/Educational institution' 
-                    onChange={(e)=>{{setPersonal({...personal, uni: e.currentTarget.value})}}}/>
+                    onChange={(e)=>{props.setUser( prevUser => ({...prevUser, uni: e.target.value}))}}/>
+            </FormControl>
+
+            <FormControl>
+            <OutlinedInput
+                    type='text'
+                    placeholder='Year in school' 
+                    onChange={(e)=>{props.setUser( prevUser => ({...prevUser, yr: e.target.value}))}}/>
+                    <FormHelperText sx={{color: 'primary.light'}}variant='outlined'> Select between options: Freshman, Sophmore,Junior,Senior,Graduate, Doctoral </FormHelperText>
+
             </FormControl>
               
-            <FormControl><SelectYear personal={personal} setPersonal={setPersonal}/></FormControl>
                
-            <FormControl><SelectMajor personal={personal} setPersonal={setPersonal}/></FormControl>
-  
+            <FormControl>
+            <OutlinedInput
+                    type='text'
+                    placeholder='Major' 
+                    onChange={(e)=>{props.setUser( prevUser => ({...prevUser,major: e.target.value}))}}/>
+                    <FormHelperText sx={{color: 'primary.light'}}variant='outlined'> If you have multiple majors seperate them with a comma  </FormHelperText>
+            </FormControl>
 
-          <Button type='submit'> Submit </Button>
           </FormControl>
           </form>
       </Box>
+
       </ThemeProvider>)
 }
 
-//Second child
+//Second children
 const countries = [
   { code: 'AD', label: 'Andorra', phone: '376' },
   {
@@ -616,8 +753,8 @@ function SelectCountry(props){
       options={countries}
       autoHighlight
       autoSelect
+      defaultValue={props.user.personal.major || ' '}
       blurOnSelect={true}
-      onChange={(e, value) =>{props.setPersonal({...props.personal, country: value.label })}}
       getOptionLabel={(option) => option.label}
       renderOption={(props, option) => {
         const { key, ...optionProps } = props;
@@ -669,10 +806,8 @@ function SelectYear(props){
   
       <TextField
       controlled
-      autoComplete
       placeholder={'Year in school'}
       value = {props.personal}
-      onChange={(e)=>{{props.setPersonal({...props.personal, year: e.currentTarget})}}}
       id='outlined-year-select'
       select
       label='Year in school'>
@@ -691,7 +826,7 @@ function SelectMajor(props){
   return(
    <TextField
   id='major-select-textfield'
-  controlled
+  value={props.user.personal.major || ' '}
   autoComplete
   placeholder={'Major'}
   select
@@ -699,9 +834,8 @@ function SelectMajor(props){
 
   slotProps={{
     InputLabel:{shrink:false, disableAnimation:true},
-  }}
-  onChange={(e)=>{props.setMajor(e.target.value), console.log(props.major)}}>
-    {majors.map((option)=>(
+  }}>
+    {majors.map((option, index)=>(
                 <MenuItem key={option.key} value={option.value}>
                     {option.value}
                 </MenuItem>

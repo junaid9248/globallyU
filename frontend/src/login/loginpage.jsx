@@ -1,14 +1,13 @@
-import { useState } from 'react'
-import { Typography, Box, FormControl, Button, InputAdornment, IconButton,createTheme, OutlinedInput, ThemeProvider} from "@mui/material"
+import { useState, useContext } from 'react'
+import { Typography, Box, FormControl, Button, InputAdornment, IconButton,createTheme, OutlinedInput, ThemeProvider, Snackbar, Alert} from "@mui/material"
 import LoginIcon from '@mui/icons-material/Login'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { red, } from '@mui/material/colors';
-import { Form, useNavigate } from 'react-router-dom';
-import Alert from '@mui/material/Alert';
+import {  useNavigate } from 'react-router-dom';
 import CheckIcon from '@mui/icons-material/Check';
-
+import { AuthContext } from '../App';
 export default function LoginBox(){
 
     const myTheme = createTheme({
@@ -41,6 +40,48 @@ export default function LoginBox(){
     const routeSignup =()=>{
         nav('/signup')
     }
+
+    
+
+    const {isLogged, setIsLogged, user ,setUser} = useContext(AuthContext);
+
+     //State for alert rendering
+     const [openAlert, setOpenAlert] = useState(false);
+     const [openAlert1, setOpenAlert1] = useState(false);
+
+    const onSubmitHandler=(e)=>{
+
+        e.preventDefault()
+
+        if(user.user_name ==="juno_92" && user.user_pass==="Pass1234!"){
+
+            
+            setIsLogged(true)
+            console.log(isLogged)
+
+            setOpenAlert(true)
+            setTimeout(() => {
+                setOpenAlert(false);
+              }, 1500);
+
+              setTimeout(() => {
+                nav('/')
+              }, 1000);
+            
+
+            
+        }else{
+            setOpenAlert1(true)
+            setTimeout(() => {
+                setOpenAlert1(false);
+              }, 3000);
+              e.preventDefault()
+        }
+        
+    }
+
+   
+
     return(
         <ThemeProvider theme={myTheme}>
         <Box label='main-box'
@@ -61,9 +102,20 @@ export default function LoginBox(){
             minWidth:"30%",
             borderRadius:'0px 16px 16px 0px'
             }}>
+            
+            <Snackbar open={openAlert} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+                <Alert severity="success" variant="filled">
+                    User account found <br/> Logging you in now... 
+                </Alert>
+            </Snackbar>
 
+            <Snackbar open={openAlert1} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+                <Alert severity='error' variant="filled">
+                    No such account exists <br/> Please try again  
+                </Alert>
+            </Snackbar>
 
-            <LoginForm theme={myTheme}/>
+            <LoginForm theme={myTheme} user={user} setUser={setUser} onSubmitHandler={onSubmitHandler}/>
 
             <Box label='signup-box'
             sx={{display: 'flex',
@@ -105,16 +157,6 @@ export default function LoginBox(){
 
 function LoginForm(props){
 
-    const [user, setUser] = useState({ 
-        user_name : " ",
-        user_pass : " "})
-
-    const onSubmitHandler=(e)=>{
-
-        e.preventDefault()
-        console.log(user)
-    }
-
     //To show/hide the password input
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -147,9 +189,7 @@ function LoginForm(props){
                     flexDirection:'column', 
                     justifyContent:'center', 
                     alignItems:'center',
-                    minWidth:'100%'}}
-
-                onSubmit={onSubmitHandler}>
+                    minWidth:'100%'}}>
 
                     <FormControl 
                     margin='normal'
@@ -161,7 +201,7 @@ function LoginForm(props){
                         fullWidth={true}
                         notched={true}
                         sx ={{backgroundColor:"primary.light"}}
-                        onChange={(e)=>{{setUser({...user, user_name: e.target.value})}}}>
+                        onChange={(e)=>{props.setUser(prevuser =>({...prevuser, user_name:e.target.value}))}}>
                         </OutlinedInput>
 
                     </FormControl>
@@ -171,7 +211,7 @@ function LoginForm(props){
                         placeholder='Password'
                         fullWidth={true}
                         type={showPassword ? 'text' : 'password'}
-                        onChange={(e)=>{setUser({...user, user_pass: e.target.value})}}
+                        onChange={(e)=>{props.setUser(prevuser =>({...prevuser, user_pass:e.target.value}))}}
                         sx={{margin: "", backgroundColor:'primary.light', label:{color:'white'}, placeholder:{color:'white'}}}
                         endAdornment={
                             <InputAdornment position="end">
@@ -195,7 +235,7 @@ function LoginForm(props){
                     sx={{minWidth:'80%'}}
                     variant="contained" 
                     color="success"
-                    onClick={onSubmitHandler}
+                    onClick={props.onSubmitHandler}
                     startIcon={<LoginIcon />}>Login</Button>
                     
                 </form>

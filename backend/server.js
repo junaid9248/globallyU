@@ -1,31 +1,19 @@
 import express from 'express'
+import dotenv from "dotenv"
 import { connectDB } from './config/db.js'
-import { user } from './models/users.model.js'
+import userRoutes from './routes/user.routes.js'
 
-
+dotenv.config()
 const myApp = express()
 
 myApp.listen(5170, ()=>{
     connectDB()
     console.log("New server started at: http://localhost:5170")
 })
-myApp.use(express.json())
 
 
-myApp.post('/api/userlist', async (req, resp) =>{
+myApp.use(express.json()) //Allows for JSON data to be used in request body 
 
-    const user1 = req.body;
+myApp.use("/api/products", userRoutes)
 
-    const newUser = new user(user1)
-
-    try{
-        (await newUser.save()),
-        resp.status(200).json({success: true, data:newUser})}
-    catch(error){
-        console.log(`New user was not created`, error.message)
-        resp.status(500).json({success: false, message:'Server error'})
-    }
-
-
-})
 

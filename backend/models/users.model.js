@@ -1,13 +1,20 @@
 import mongoose from "mongoose";
 
-//Schema for creating a user profile
-const userSchema = new mongoose.Schema({
 
-    userName: String,
-    password: String
-    
-})
+const userSchema = new mongoose.Schema({
+    userName: { type: String, required: true, unique: true} ,
+    password:{ type: String, required: true },
+    firstName: {type:String},
+    lastName: {type:String},
+    dateOfBirth: {type:String},
+    country: {type:String},
+    uni:{type:String},
+    year: {type:String},
+    major: {type:String},
+  }, {timestamps:true});
+
 
 //Exporting the model to create an instance 
-export const user = mongoose.model('user', userSchema)
+const User = mongoose.model('User', userSchema)
 
+export default User;
