@@ -3,17 +3,17 @@ import User from "../models/users.model.js";
 //Method to create a new user 
 export const createNewUser = async (req, resp) =>{
  
-    const user1 = req.body; //This is what user will pass to db
+    const user = req.body; //This is what user will pass to db
 
-    if(!user1.accountDetails ||!user1.accountDetails.userName || !user1.accountDetails.password){
+    if(!user.username || !user.password){
         return resp.status(400).json({
             success:false,
-            message:"Please provide a valid username and password to create your account"}) }//Error message 
+            message:"Please provide username AND password to create your account"}) }//Error message 
 
-    const newUser = new User(user1)
+    const newUser = new User(user)
 
     try{
-        (await newUser.save()),
+        await newUser.save(),
         resp.status(200).json({success: true, data: newUser})} //Note that userdata is what we are going to be posting to the cluster
     catch(error){
         console.log(`New user was not created`, error.message)

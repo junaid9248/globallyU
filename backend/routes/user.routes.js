@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 import { createNewUser, getAllUsers} from '../controllers/user.controller.js';
 
 
-const userRouter = express.Router(); //Creating the express router to be used
+const router = express.Router(); //Creating the express router to be used
 
 //Post method to create a new user
-userRouter.post('/api/userlist', createNewUser)
+router.post('/', createNewUser)
 
 //Method to get all users 
-userRouter.get('/api/userlist', getAllUsers)
+router.get('/', getAllUsers)
 
-export default userRouter
+export default router;

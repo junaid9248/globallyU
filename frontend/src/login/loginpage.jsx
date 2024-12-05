@@ -53,7 +53,7 @@ export default function LoginBox(){
 
         e.preventDefault()
 
-        if(user.user_name ==="juno_92" && user.user_pass==="Pass1234!"){
+        if(user.user_name ==="juno_92" && user.user_pass === "Pass1234!"){
 
             
             setIsLogged(true)

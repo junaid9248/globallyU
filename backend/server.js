@@ -4,16 +4,16 @@ import { connectDB } from './config/db.js'
 import userRoutes from './routes/user.routes.js'
 
 dotenv.config()
+
 const myApp = express()
+
+myApp.use(express.json()) //Allows for JSON data to be used in request body. It is middleware
+
+myApp.use("/api/userlist", userRoutes)
 
 myApp.listen(5170, ()=>{
     connectDB()
     console.log("New server started at: http://localhost:5170")
 })
-
-
-myApp.use(express.json()) //Allows for JSON data to be used in request body 
-
-myApp.use("/api/products", userRoutes)
 
 

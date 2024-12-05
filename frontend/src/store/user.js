@@ -8,7 +8,7 @@ export const useUserStore = create((set) => ({
     //THIS IS THE FUNCTION WE WILL BE USING TO POST THE GLOBAL USER OBJECT
     createUser: async(newUser) => {
 
-        if (!newUser.account.name || !newUser.account.pass){
+        if (!newUser.name || !newUser.password){
 
             return({success:false, message: "Please provide valid username and password"})
         }

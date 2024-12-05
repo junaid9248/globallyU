@@ -60,7 +60,8 @@ export default function Signup(){
 
   const [user, setUser] = useState({
     
-    
+      username: " ",
+      password: " ",
 
       fname: " ",
       lname: " ",
@@ -70,14 +71,7 @@ export default function Signup(){
       yr: " ",
       major: " ",
 
-      username: " ",
-      pass: " ",
-  
-
-
   })
-
-
 
   //State for alert rendering
   const [openAlert, setOpenAlert] = useState(false);
@@ -109,7 +103,6 @@ export default function Signup(){
         nav('/login')
       }, 1000);
     }
-
 
   }
 
@@ -196,14 +189,14 @@ function UserDetails(props){
                  <OutlinedInput
                  type='text'
                  placeholder='Password'
-                 onChange={(e)=>{props.setUser(prevUser => ({...prevUser, pass: e.target.value}))}}
+                 onChange={(e)=>{props.setUser(prevUser => ({...prevUser, password: e.target.value}))}}
                  sx={{}} />
                </FormControl>
                
            </FormControl>
 
            <PasswordChecklist rules={["minLength", "specialChar", "capitalAndLowercase","letter", "noSpaces", "number" ]}
-                 value={props.user.pass}
+                 value={props.user.password}
                 
 
                  minLength={8}
